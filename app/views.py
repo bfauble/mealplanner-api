@@ -1,22 +1,10 @@
-import json
 from flask import jsonify, abort, make_response, request, url_for
 from flask.ext.httpauth import HTTPBasicAuth
-from flask.ext.admin import Admin, BaseView, expose
 from app import app, db
 from models import User, Menu, Meal, Recipe
 
 
 auth = HTTPBasicAuth()
-
-
-@app.route('/')
-def index():
-    return 'Hello, World!'
-
-
-@expose('/admin')
-def admin(self):
-    return self.render('admin/')
 
 
 @app.route('/mealplan/api/v1.0/menu', methods=['GET'])
