@@ -1,5 +1,7 @@
+import json
 from flask import jsonify, abort, make_response, request, url_for
 from flask.ext.httpauth import HTTPBasicAuth
+from flask.ext.admin import Admin, BaseView, expose
 from app import app, db
 from models import User, Menu, Meal, Recipe
 
@@ -12,19 +14,27 @@ def index():
     return 'Hello, World!'
 
 
+@expose('/admin')
+def admin(self):
+    return self.render('admin/')
+
+
 @app.route('/mealplan/api/v1.0/menu', methods=['GET'])
 #@auth.login_required
 def get_menus():
-    return jsonify({'menus': 'menus'})
+    menu = db.session.query(Menu).all()
+    if len(menu) == 0:
+        abort(404)
+    return jsonify(message=[i.serialize for i in menu])
 
 
 @app.route('/mealplan/api/v1.0/menu/<int:menu_id>', methods=['GET'])
 #@auth.login_required
 def get_menu(menu_id):
-    menu = Menu.query.get(int(menu_id))
+    menu = db.session.query(Menu).filter_by(id=str(menu_id)).all()
     if len(menu) == 0:
         abort(404)
-    return jsonify({'menu': menu})
+    return jsonify(message=[i.serialize for i in menu])
 
 
 @app.route('/mealplan/api/v1.0/menu', methods=['POST'])
@@ -58,16 +68,19 @@ def delete_menu(menu_id):
 @app.route('/mealplan/api/v1.0/meal', methods=['GET'])
 #@auth.login_required
 def get_meals():
-    return jsonify({'meals': 'meals'})
+    meal = db.session.query(Meal).all()
+    if len(meal) == 0:
+        abort(404)
+    return jsonify(message=[i.serialize for i in meal])
 
 
 @app.route('/mealplan/api/v1.0/meal/<int:meal_id>', methods=['GET'])
 #@auth.login_required
 def get_meal(meal_id):
-    meal = Meal.query.get(int(meal_id))
+    meal = db.session.query(Meal).filter_by(id=str(meal_id)).all()
     if len(meal) == 0:
         abort(404)
-    return jsonify({'meal': meal[0]})
+    return jsonify(message=[i.serialize for i in meal])
 
 
 @app.route('/mealplan/api/v1.0/meal', methods=['POST'])
@@ -101,16 +114,20 @@ def delete_meal(meal_id):
 @app.route('/mealplan/api/v1.0/recipe', methods=['GET'])
 #@auth.login_required
 def get_recipes():
-    return jsonify({'recipes': 'recipes'})
+    #Filter based on user
+    recipe = db.session.query(Recipe).all()
+    if len(recipe) == 0:
+        abort(404)
+    return jsonify(message=[i.serialize for i in recipe])
 
 
 @app.route('/mealplan/api/v1.0/recipe/<int:recipe_id>', methods=['GET'])
 #@auth.login_required
 def get_recipe(recipe_id):
-    recipe = Recipe.query.get(int(recipe_id))
+    recipe = db.session.query(Recipe).filter_by(id=str(recipe_id)).all()
     if len(recipe) == 0:
         abort(404)
-    return jsonify({'recipe': recipe[0]})
+    return jsonify(message=[i.serialize for i in recipe])
 
 
 @app.route('/mealplan/api/v1.0/recipe', methods=['POST'])
@@ -143,9 +160,9 @@ def delete_recipe(recipe_id):
 
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    return make_response(jsonify(message={'error': 'Not found'}), 404)
 
 
 @auth.error_handler
 def unauthorized():
-    return make_response(jsonify({'error': 'Unathorized access'}), 403)
+    return make_response(jsonify(message={'error': 'Unathorized access'}), 403)
