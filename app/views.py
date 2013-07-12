@@ -13,7 +13,7 @@ def get_menus():
     menu = db.session.query(Menu).all()
     if len(menu) == 0:
         abort(404)
-    return jsonify(message=[i.serialize for i in menu])
+    return jsonify(message={"menu": [i.serialize for i in menu]})
 
 
 @app.route('/mealplan/api/v1.0/menu/<int:menu_id>', methods=['GET'])
@@ -22,7 +22,7 @@ def get_menu(menu_id):
     menu = db.session.query(Menu).filter_by(id=str(menu_id)).all()
     if len(menu) == 0:
         abort(404)
-    return jsonify(message=[i.serialize for i in menu])
+    return jsonify(message={"menu": [i.serialize for i in menu]})
 
 
 @app.route('/mealplan/api/v1.0/menu', methods=['POST'])
@@ -59,7 +59,7 @@ def get_meals():
     meal = db.session.query(Meal).all()
     if len(meal) == 0:
         abort(404)
-    return jsonify(message=[i.serialize for i in meal])
+    return jsonify(message={"meals": [i.serialize for i in meal]})
 
 
 @app.route('/mealplan/api/v1.0/meal/<int:meal_id>', methods=['GET'])
@@ -68,7 +68,7 @@ def get_meal(meal_id):
     meal = db.session.query(Meal).filter_by(id=str(meal_id)).all()
     if len(meal) == 0:
         abort(404)
-    return jsonify(message=[i.serialize for i in meal])
+    return jsonify(message={"meal": [i.serialize for i in meal]})
 
 
 @app.route('/mealplan/api/v1.0/meal', methods=['POST'])
@@ -106,7 +106,7 @@ def get_recipes():
     recipe = db.session.query(Recipe).all()
     if len(recipe) == 0:
         abort(404)
-    return jsonify(message=[i.serialize for i in recipe])
+    return jsonify(message={"recipe": [i.serialize for i in recipe]})
 
 
 @app.route('/mealplan/api/v1.0/recipe/<int:recipe_id>', methods=['GET'])
@@ -115,7 +115,7 @@ def get_recipe(recipe_id):
     recipe = db.session.query(Recipe).filter_by(id=str(recipe_id)).all()
     if len(recipe) == 0:
         abort(404)
-    return jsonify(message=[i.serialize for i in recipe])
+    return jsonify(message={"recipe": [i.serialize for i in recipe]})
 
 
 @app.route('/mealplan/api/v1.0/recipe', methods=['POST'])

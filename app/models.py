@@ -117,6 +117,7 @@ class Recipe(db.Model):
         return {
             'id': self.id,
             'author': self.author_id,
+            'title': self.title,
             'directions': self.directions,
             'ingredients': self.ingredients
         }
