@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<meta charset="UTF-8">
+	<title>{% block title %}{% endblock title %}</title>
+</head>
+<body>
+	<div id="content">
+    <form id="form">
+		{% block content %}
+    
+		{% endblock content %}
+    </form>
+    <a href="{{url}}">{{url}}</a>
+	<div id="output"></div>
+	</div>
+</body>
+<script>
+{% block script %}
+$("#form").submit(function(event) {
+	event.preventDefault();
+	var data = {};
+	$("#form").children().not(":input[type=submit]").not("#array").each(function() {
+		if ($(this).is("input")) {
+			if (!$(this).is("input:last")) {
+				data[$(this).attr("name")] = $(this).val();
+			}
+		}
+	});
+	/* Gather up #array to load relationship values (Meals to Recipes) */
+	var array_key = $("#array>input").attr("name");
+	data[array_key] = [];
+	$("#array").children(":input").each(function() {
+		data[array_key].push($(this).val());
+	});
+	/* Gather up #dict > .childclass to load relationship objects (Menus to Meals) */
+	var dict_key = $("#dict>div").attr("class");
+	data[dict_key] = [];
+	$("#dict").children("div").each(function() {
+		var temp = {};
+		$(this).children(":input").each(function() {
+			temp[$(this).attr("name")] = $(this).val();
+		});
+		data[dict_key].push(temp);
+	})
+	$.ajax({
+		url: '{{url}}',
+		type: 'POST',
+		data: JSON.stringify(data),
+		contentType: 'application/json',
+		datatype: 'jsonp',
+		success: function(response) {
+			console.log(response);
+		}
+	});
+	return false;
+});
+{% endblock script %}
+</script>
+</html>

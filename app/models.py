@@ -1,4 +1,5 @@
 from app import db
+from datetime import datetime
 
 
 meal_to_recipe_table = db.Table('meal_to_recipe', db.Model.metadata,
@@ -37,6 +38,12 @@ class Menu(db.Model):
     comments = db.Column(db.Text)
     meals = db.relationship('MenuMeal')
 
+    def load(self, params):
+        self.author_id = params['author_id']
+        self.start_date = datetime.strptime(params['start_date'], "%Y-%m-%d").date()
+        self.end_date = datetime.strptime(params['end_date'], "%Y-%m-%d").date()
+        self.comments = params['comments']
+
     @property
     def serialize(self):
         return {
@@ -63,6 +70,12 @@ class MenuMeal(db.Model):
     meal_id = db.Column('meal_id', db.Integer, db.ForeignKey('meal.id'), primary_key=True)
     meal = db.relationship('Meal')
 
+    def load(self, params):
+        self.meal_date = datetime.strptime(params['meal_date'], "%Y-%m-%d").date()
+        self.meal_time = params['meal_time']
+        self.menu_id = params['menu_id']
+        self.meal_id = params['meal_id']
+
     @property
     def serialize(self):
         return {
@@ -86,6 +99,14 @@ class Meal(db.Model):
     title = db.Column(db.String(160), nullable=False)
     description = db.Column(db.Text)
     recipes = db.relationship('Recipe', secondary=meal_to_recipe_table)
+
+    def load(self, params):
+        self.author_id = params['author_id']
+        self.title = params['title']
+        self.description = params['description']
+        for rec in params['recipes']:
+            recipe = db.session.query(Recipe).filter_by(id=str(rec)).one()
+            self.recipes.append(recipe)
 
     @property
     def serialize(self):
@@ -111,6 +132,12 @@ class Recipe(db.Model):
     title = db.Column(db.String(160), nullable=False)
     directions = db.Column(db.Text)
     ingredients = db.Column(db.Text)
+
+    def load(self, params):
+        self.author_id = params['author_id']
+        self.title = params['title']
+        self.directions = params['directions']
+        self.ingredients = params['ingredients']
 
     @property
     def serialize(self):

@@ -1,10 +1,26 @@
-from flask import jsonify, abort, make_response, request, url_for
+from flask import jsonify, abort, make_response, request, url_for, render_template
 from flask.ext.httpauth import HTTPBasicAuth
 from app import app, db
-from models import User, Menu, Meal, Recipe
+from models import User, Menu, Meal, Recipe, MenuMeal
+import json
 
 
 auth = HTTPBasicAuth()
+
+
+@app.route('/addmenu')
+def add_menu():
+    return render_template('addmenu.html', url=url_for('create_menu'))
+
+
+@app.route('/addmeal')
+def add_meal():
+    return render_template('addmeal.html', url=url_for('create_meal'))
+
+
+@app.route('/addrecipe')
+def add_recipe():
+    return render_template('addrecipe.html', url=url_for('create_recipe'))
 
 
 @app.route('/mealplan/api/v1.0/menu', methods=['GET'])
@@ -28,12 +44,20 @@ def get_menu(menu_id):
 @app.route('/mealplan/api/v1.0/menu', methods=['POST'])
 #@auth.login_required
 def create_menu():
-    if not request.json or not 'start_date' in request.json:
+    #return jsonify({'menu': request.json}), 201
+    if not request.json:
         abort(404)
-    menu = {}
+    menu = Menu()
     db.session.add(menu)
+    menu.load(request.json)
     db.session.commit()
-    return jsonify({'menu': menu}), 201
+    for meal in request.json['meals']:
+        meal['menu_id'] = menu.id
+        mm = MenuMeal()
+        mm.load(meal)
+        db.session.add(mm)
+    db.session.commit()
+    return jsonify({'menu': menu.serialize}), 201
 
 
 @app.route('/mealplan/api/v1.0/menu/<int:menu_id>', methods=['PUT'])
@@ -74,12 +98,14 @@ def get_meal(meal_id):
 @app.route('/mealplan/api/v1.0/meal', methods=['POST'])
 #@auth.login_required
 def create_meal():
-    if not request.json or not 'start_date' in request.json:
+    #return jsonify({'meal': request.json['recipes']}), 201
+    if not request.json:
         abort(404)
-    meal = {}
+    meal = Meal()
     db.session.add(meal)
+    meal.load(request.json)
     db.session.commit()
-    return jsonify({'meal': meal}), 201
+    return jsonify({'meal': meal.serialize}), 201
 
 
 @app.route('/mealplan/api/v1.0/meal/<int:meal_id>', methods=['PUT'])
@@ -121,12 +147,13 @@ def get_recipe(recipe_id):
 @app.route('/mealplan/api/v1.0/recipe', methods=['POST'])
 #@auth.login_required
 def create_recipe():
-    if not request.json or not 'start_date' in request.json:
+    if not request.json:
         abort(404)
-    recipe = {}
+    recipe = Recipe()
     db.session.add(recipe)
+    recipe.load(request.json)
     db.session.commit()
-    return jsonify({'recipe': recipe}), 201
+    return jsonify(message={"recipe": recipe.serialize}), 201
 
 
 @app.route('/mealplan/api/v1.0/recipe/<int:recipe_id>', methods=['PUT'])
