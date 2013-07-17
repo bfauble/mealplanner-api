@@ -2,10 +2,14 @@ from flask import jsonify, abort, make_response, request, url_for, render_templa
 from flask.ext.httpauth import HTTPBasicAuth
 from app import app, db
 from models import User, Menu, Meal, Recipe, MenuMeal
-import json
 
 
 auth = HTTPBasicAuth()
+
+
+@app.route('/')
+def index():
+    return make_response(open('static/index.html').read())
 
 
 @app.route('/addmenu')
@@ -44,7 +48,6 @@ def get_menu(menu_id):
 @app.route('/mealplan/api/v1.0/menu', methods=['POST'])
 #@auth.login_required
 def create_menu():
-    #return jsonify({'menu': request.json}), 201
     if not request.json:
         abort(404)
     menu = Menu()
@@ -98,7 +101,6 @@ def get_meal(meal_id):
 @app.route('/mealplan/api/v1.0/meal', methods=['POST'])
 #@auth.login_required
 def create_meal():
-    #return jsonify({'meal': request.json['recipes']}), 201
     if not request.json:
         abort(404)
     meal = Meal()
