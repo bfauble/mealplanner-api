@@ -26,9 +26,6 @@ class User(db.Model):
             'last_seen': self.last_seen
         }
 
-    def __repr__(self):
-        return "User(%r, %r, %r, %r, %r, %r, %r)" % (self.id, self.username, self.email, self.last_seen, self.recipes, self.meals, self.menus)
-
 
 class Menu(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,9 +56,6 @@ class Menu(db.Model):
     def serialize_m_to_m(self):
         return [item.serialize for item in self.meals]
 
-    def __repr__(self):
-        return "Menu(%r, %r, %r, %r, %r, %r)" % (self.id, self.author_id, self.start_date, self.end_date, self.comments, self.meals)
-
 
 class MenuMeal(db.Model):
     meal_date = db.Column('meal_date', db.DateTime, nullable=False)
@@ -88,9 +82,6 @@ class MenuMeal(db.Model):
     @property
     def serialize_m_to_m(self):
         return self.meal.serialize
-
-    def __repr__(self):
-        return "MenuMeal(%r, %r, %r, %r)" % (self.meal_date, self.meal_time, self.menu_id, self.meal_id)
 
 
 class Meal(db.Model):
@@ -122,9 +113,6 @@ class Meal(db.Model):
     def serialize_m_to_m(self):
         return [item.serialize for item in self.recipes]
 
-    def __repr__(self):
-        return "Meal(%r, %r, %r, %r, %r)" % (self.id, self.author_id, self.title, self.description, self.recipes)
-
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -148,6 +136,3 @@ class Recipe(db.Model):
             'directions': self.directions,
             'ingredients': self.ingredients
         }
-
-    def __repr__(self):
-        return "Recipe(%r, %r, %r, %r, %r)" % (self.id, self.author_id, self.title, self.directions, self.ingredients)

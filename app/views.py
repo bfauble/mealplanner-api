@@ -1,4 +1,4 @@
-from flask import jsonify, abort, make_response, request, url_for, render_template
+from flask import jsonify, abort, make_response, request, url_for, render_template, send_from_directory
 from flask.ext.httpauth import HTTPBasicAuth
 from app import app, db
 from models import User, Menu, Meal, Recipe, MenuMeal
@@ -9,7 +9,8 @@ auth = HTTPBasicAuth()
 
 @app.route('/')
 def index():
-    return make_response(open('static/index.html').read())
+    return make_response(open('app/static/index.html').read())
+    #return render_template('index.html', angular=url_for('static', filename='js/testing.js'))
 
 
 @app.route('/addmenu')
@@ -66,14 +67,20 @@ def create_menu():
 @app.route('/mealplan/api/v1.0/menu/<int:menu_id>', methods=['PUT'])
 #@auth.login_required
 def update_menu(menu_id):
-    return jsonify({'menu': 'menu'})
+    menu = Menu.query.get(int(menu_id))
+    if menu is None:
+        abort(404)
+    menu.load(request.json)
+    db.session.add(menu)
+    db.session.commit()
+    return jsonify(message={'menu': True}), 200
 
 
 @app.route('/mealplan/api/v1.0/menu/<int:menu_id>', methods=['DELETE'])
 #@auth.login_required
 def delete_menu(menu_id):
     menu = Menu.query.get(int(menu_id))
-    if len(menu) == 0:
+    if menu is None:
         abort(404)
     db.session.delete(menu)
     db.session.commit()
@@ -113,18 +120,24 @@ def create_meal():
 @app.route('/mealplan/api/v1.0/meal/<int:meal_id>', methods=['PUT'])
 #@auth.login_required
 def update_meal(meal_id):
-    return jsonify({'meal': 'meal'})
+    meal = Meal.query.get(int(meal_id))
+    if meal is None:
+        abort(404)
+    meal.load(request.json)
+    db.session.add(meal)
+    db.session.commit()
+    return jsonify(message={'meal': True}), 200
 
 
 @app.route('/mealplan/api/v1.0/meal/<int:meal_id>', methods=['DELETE'])
 #@auth.login_required
 def delete_meal(meal_id):
     meal = Meal.query.get(int(meal_id))
-    if len(meal) == 0:
+    if meal is None:
         abort(404)
     db.session.delete(meal)
     db.session.commit()
-    return jsonify({'result': True})
+    return jsonify({'result': True}), 202
 
 
 @app.route('/mealplan/api/v1.0/recipe', methods=['GET'])
@@ -161,18 +174,24 @@ def create_recipe():
 @app.route('/mealplan/api/v1.0/recipe/<int:recipe_id>', methods=['PUT'])
 #@auth.login_required
 def update_recipe(recipe_id):
-    return jsonify({'recipe': 'recipe'})
+    recipe = Recipe.query.get(int(recipe_id))
+    if recipe is None:
+        abort(404)
+    recipe.load(request.json)
+    db.session.add(recipe)
+    db.session.commit()
+    return jsonify(message={'recipe': True}), 200
 
 
 @app.route('/mealplan/api/v1.0/recipe/<int:recipe_id>', methods=['DELETE'])
 #@auth.login_required
 def delete_recipe(recipe_id):
     recipe = Recipe.query.get(int(recipe_id))
-    if len(recipe) == 0:
+    if recipe is None:
         abort(404)
     db.session.delete(recipe)
     db.session.commit()
-    return jsonify({'result': True})
+    return jsonify(message={'result': True}), 202
 
 
 @app.errorhandler(404)
