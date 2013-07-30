@@ -1,6 +1,6 @@
 Flask==0.10.1
 Flask-Admin==1.0.6
-Flask-HTTPAuth==0.6
+Flask-HTTPAuth==1.0.0
 Flask-Login==0.2.5
 Flask-SQLAlchemy==0.16
 Flask-WTF==0.8.4
