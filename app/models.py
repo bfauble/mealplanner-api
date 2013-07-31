@@ -36,7 +36,7 @@ class Menu(db.Model):
     meals = db.relationship('MenuMeal')
 
     def load(self, params):
-        self.author_id = params['author_id']
+        self.author = User.query.get(int(params['author_id']))
         self.start_date = datetime.strptime(params['start_date'], "%Y-%m-%d").date()
         self.end_date = datetime.strptime(params['end_date'], "%Y-%m-%d").date()
         self.comments = params['comments']
@@ -45,7 +45,7 @@ class Menu(db.Model):
     def serialize(self):
         return {
             'id': self.id,
-            'author': self.author_id,
+            'author': self.author.serialize,
             'start_date': self.start_date,
             'end_date': self.end_date,
             'comments': self.comments,
@@ -92,7 +92,7 @@ class Meal(db.Model):
     recipes = db.relationship('Recipe', secondary=meal_to_recipe_table)
 
     def load(self, params):
-        self.author_id = params['author_id']
+        self.author = User.query.get(int(params['author_id']))
         self.title = params['title']
         self.description = params['description']
         for rec in params['recipes']:
@@ -103,7 +103,7 @@ class Meal(db.Model):
     def serialize(self):
         return {
             'id': self.id,
-            'author': self.author_id,
+            'author': self.author.serialize,
             'title': self.title,
             'description': self.description,
             'recipes': self.serialize_m_to_m
@@ -122,7 +122,7 @@ class Recipe(db.Model):
     ingredients = db.Column(db.Text)
 
     def load(self, params):
-        self.author_id = params['author_id']
+        self.author = User.query.get(int(params['author_id']))
         self.title = params['title']
         self.directions = params['directions']
         self.ingredients = params['ingredients']
@@ -131,7 +131,8 @@ class Recipe(db.Model):
     def serialize(self):
         return {
             'id': self.id,
-            'author': self.author_id,
+            'author': self.author.serialize,
+            'author_id': self.author_id,
             'title': self.title,
             'directions': self.directions,
             'ingredients': self.ingredients

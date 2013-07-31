@@ -93,7 +93,7 @@ def get_meals():
     meal = db.session.query(Meal).all()
     if len(meal) == 0:
         abort(404)
-    return jsonify(message={"meals": [i.serialize for i in meal]})
+    return jsonify(message={"meal": [i.serialize for i in meal]})
 
 
 @app.route('/mealplan/api/v1.0/meal/<int:meal_id>', methods=['GET'])
