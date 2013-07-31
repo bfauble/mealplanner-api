@@ -1,0 +1,15 @@
+<h2>List</h2>
+<div>
+	<label for="search">Search:</label>
+	<input type="search" ng-model="search">
+</div>
+<ul>
+	<li ng-repeat="menu in menus | filter:search">
+		<a href="#/menu/{{menu.id}}">{{menu.id}}</a>
+		<p>{{menu.title}}</p>
+		<p>{{menu.author.username}}</p>
+		<p>{{menu.comments}}</p>
+		<p>{{menu.meals}}</p>
+		
+	</li>
+</ul>

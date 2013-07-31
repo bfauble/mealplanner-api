@@ -13,7 +13,7 @@
 		{% endblock content %}
     </form>
     <a href="{{url}}">{{url}}</a>
-	<div id="output"></div>
+	<pre><div id="output"></div></pre>
 	</div>
 </body>
 <script>
@@ -50,8 +50,15 @@ $("#form").submit(function(event) {
 		data: JSON.stringify(data),
 		contentType: 'application/json',
 		datatype: 'jsonp',
-		success: function(response) {
-			console.log(response);
+		success: function(data, textStatus, jqXHR) {
+			console.log(data);
+			console.log(textStatus);
+			console.log(jqXHR);
+			$("#output").empty();
+			$("#output").append(jqXHR.status);
+			$("#output").append("<pre>");
+			$("#output").append(JSON.stringify(data, undefined, 4));
+			$("#output").append("</pre>");
 		}
 	});
 	return false;
